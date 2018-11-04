@@ -1,7 +1,7 @@
 /*jshint esversion: 6*/
 
 const assert = require('assert');
-var features = require('../features.js');
+var features = require('../urlFeatures.js');
 
 describe('urlContainsIP', function() {
     it('Should return true for urls containing IPv4', () => {
