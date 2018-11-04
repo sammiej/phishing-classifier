@@ -42,16 +42,6 @@ describe('numberofLinkedToDomain', function() {
         assert.equal(features.numberOfLinkedToDomain(emailBody), 0);
     });
 
-    // it('Should return 0 for invalid links', () => {
-    //     var emailBody1 = 'Hello this is not a phishing email I promise asdfftp://www.dummy.com:8000/index.html';
-    //     var emailBody2 = 'Hello this is not a phishing email I promise http://ww.dummy.com:8000/index.html blahblah';
-    //     var emailBody3 = 'Hello this is not a phishing email I promise https://dummy..com/index//html blahblah';
-    //
-    //     assert.equal(features.numberOfLinkedToDomain(emailBody1), 0);
-    //     assert.equal(features.numberOfLinkedToDomain(emailBody2), 0);
-    //     assert.equal(features.numberOfLinkedToDomain(emailBody3), 0);
-    // });
-
     it('Should return 1 for one distinct domain', () => {
         var emailBody = 'Hello this is not a phishing email I promise ftp://www.dummy.com:8000/index.html';
 
