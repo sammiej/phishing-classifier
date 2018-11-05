@@ -97,9 +97,9 @@ describe("Url Parser", () => {
    });
 
    it("should parse a url out of href tag with href not being the first element", () => {
-       const href = '<a title="Resolve" class="aapl-link" style="TEXT-DECORATION: none; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LETTER-SPACING: normal; LINE-HEIGHT: 100%" href="http://ow.ly/KahG30mqCQX" target="_blank"><font style="FONT-SIZE: 0px; COLOR: transparent; DISPLAY: inline">';
+       const href = 'href="http://ow.ly/KahG30mqCQX" target="_blank"><font style="FONT-SIZE: 0px; COLOR: transparent; DISPLAY: inline">';
        let response = JsIdentifier.parseUrl(href);
-       let actual = "ow.ly";
+       let actual = "http://ow.ly/KahG30mqCQX";
        expect(response).to.equal(actual);
    });
 });
