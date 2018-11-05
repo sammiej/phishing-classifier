@@ -1,6 +1,3 @@
-/**
- * Created by JoySenpai on 2018-11-02.
- */
 const JsIdentifier = {};
 
 // finding presence of javascript
@@ -25,7 +22,7 @@ JsIdentifier.parseDomain = function (url) {
 /**
  * Identifies the href tag for linking and outputs list of url.
  * I: 'hello <a href="https://www.google.com/?FDsfa=fsfs">text</a>
- * O: [href="https://www.google.com/?FDsfa=fsfs"]
+ * O: ['href="https://www.google.com/?FDsfa=fsfs"']
  * @param email: string that can contain text and html tags and links
  */
 JsIdentifier.parseHrefs = function (email) {
@@ -34,7 +31,7 @@ JsIdentifier.parseHrefs = function (email) {
     return hrefList;
 };
 /**
- * Given input in <a href="..."> format, output the ...
+ * Given input in 'href="..."' format, output the ...
  * component.
  * @param href
  * @returns string
@@ -108,12 +105,12 @@ JsIdentifier.numOfDomainMisMatch = function (domainList, senderDomain) {
 };
 /**
  * Given a email, return the number of links embedded inside as
- * referenced by <a href="...">.
+ * referenced by 'href="..."'.
  * @param email
  * @returns number of links
  */
 JsIdentifier.numOfLinks = function (email) {
-    let regex = /<a href=".*?>/g;
+    let regex = /href=".*?/g;
     return email.match(regex).length;
 };
 /**
