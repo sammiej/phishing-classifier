@@ -97,7 +97,7 @@ JsIdentifier.findDomainList = function (email) {
  * @param senderDomain: [string]
  * @returns number of mismatched domains
  */
-JsIdentifier.numOfDomainMatch = function (domainList, senderDomain) {
+JsIdentifier.numOfDomainMisMatch = function (domainList, senderDomain) {
     let count = 0;
     for(domain of domainList) {
         if(domain !== senderDomain) {

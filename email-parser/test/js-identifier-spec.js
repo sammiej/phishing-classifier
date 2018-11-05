@@ -8,7 +8,7 @@ describe("JS Parser", () => {
         expect(response).to.equal(true);
     });
     it("should detect upper case script tag", () => {
-        const scriptUpperCase = "fkdfa <SCRIPT fdfs sfd = </SCRIPT>"; // false
+        const scriptUpperCase = "fkdfa <SCRIPT fdfs sfd = </SCRIPT>"; // true
         let response = JsIdentifier.parseJS(scriptUpperCase);
         expect(response).to.equal(true);
     });
@@ -77,6 +77,15 @@ describe("Href Parser", () => {
        expect(response).to.deep.contains(hrefList[0]);
        expect(response.length).to.equal(3);
    });
+
+   it("should parse the urls out even if href is not the first element in the tag", () => {
+       const email = '<a title="Resolve" class="aapl-link" style="TEXT-DECORATION: none; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LETTER-SPACING: normal; LINE-HEIGHT: 100%" href="http://ow.ly/KahG30mqCQX" target="_blank"><font style="FONT-SIZE: 0px; COLOR: transparent; DISPLAY: inline">8sy</font>Verify your Account</a>';
+       let response = JsIdentifier.parseHrefs(email);
+       let hrefList = ['<a title="Resolve" class="aapl-link" style="TEXT-DECORATION: none; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LETTER-SPACING: normal; LINE-HEIGHT: 100%" href="http://ow.ly/KahG30mqCQX" target="_blank"><font style="FONT-SIZE: 0px; COLOR: transparent; DISPLAY: inline">'];
+       expect(response).to.deep.equal(hrefList);
+       expect(response.length).to.equal(1);
+   });
+  
 });
 
 describe("Url Parser", () => {
@@ -85,7 +94,14 @@ describe("Url Parser", () => {
        let response = JsIdentifier.parseUrl(href);
        let actual = "www.formatwithapppend.ca?dsd=fdsad/gsda";
        expect(response).to.deep.equal(actual);
-    });
+   });
+
+   it("should parse a url out of href tag with href not being the first element", () => {
+       const href = '<a title="Resolve" class="aapl-link" style="TEXT-DECORATION: none; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LETTER-SPACING: normal; LINE-HEIGHT: 100%" href="http://ow.ly/KahG30mqCQX" target="_blank"><font style="FONT-SIZE: 0px; COLOR: transparent; DISPLAY: inline">';
+       let response = JsIdentifier.parseUrl(href);
+       let actual = "ow.ly";
+       expect(response).to.equal(actual);
+   });
 });
 
 describe("Dots Parser", () => {
@@ -101,6 +117,7 @@ describe("Dots Parser", () => {
         expect(responseFive).to.equal(5);
     });
 });
+
 describe("Plain Url Parser", () => {
    it("should return a list of plaintext url with href appended from an email", () => {
        const email = 'fake email with http://text.base.url/fdsf and https://www.dsadb.f.url?f www.sthsth.com and <a href="www.links.com">test</a>';
@@ -138,7 +155,7 @@ describe("Find Domain List", () => {
    });
 });
 
-describe("numOfDomainMatch", () => {
+describe("numOfDomainMisMatch", () => {
     it("should return the number of mismatched domains", () => {
         let domainList = [
             "text.base.url",
@@ -150,7 +167,7 @@ describe("numOfDomainMatch", () => {
             "324-fdsfa.dd.ca"
         ];
         let senderDomain = "based.io";
-        let response = JsIdentifier.numOfDomainMatch(domainList, senderDomain);
+        let response = JsIdentifier.numOfDomainMisMatch(domainList, senderDomain);
         expect(response).to.equal(6);
     });
 });
@@ -165,6 +182,12 @@ describe("numOfLinks", () => {
             'and <a href="https://www.324-fdsfa.dd.ca">test</a>';
         let response = JsIdentifier.numOfLinks(email);
         expect(response).to.equal(5);
+    });
+
+    it("href not the first element in <a ...> tag should still find link correctly", () => {
+        const email = '<a title="Resolve" class="aapl-link" style="TEXT-DECORATION: none; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LETTER-SPACING: normal; LINE-HEIGHT: 100%" href="http://ow.ly/KahG30mqCQX" target="_blank"><font style="FONT-SIZE: 0px; COLOR: transparent; DISPLAY: inline">';
+        let response = JsIdentifier.numOfLinks(email);
+        expect(response).to.equal(1);
     });
 });
 
