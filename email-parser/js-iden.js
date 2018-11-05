@@ -25,11 +25,11 @@ JsIdentifier.parseDomain = function (url) {
 /**
  * Identifies the href tag for linking and outputs list of url.
  * I: 'hello <a href="https://www.google.com/?FDsfa=fsfs">text</a>
- * O: [<a href="https://www.google.com/?FDsfa=fsfs">]
+ * O: [href="https://www.google.com/?FDsfa=fsfs"]
  * @param email: string that can contain text and html tags and links
  */
 JsIdentifier.parseHrefs = function (email) {
-    var regex = /<a href=".*?>/g;
+    var regex = /href=".*?"/g;
     var hrefList = email.match(regex);
     return hrefList;
 };

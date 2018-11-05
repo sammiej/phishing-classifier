@@ -69,9 +69,9 @@ describe("Href Parser", () => {
            'and <a href="http://based.io">test</a>';
        let response = JsIdentifier.parseHrefs(email);
        let hrefList =  [
-           '<a href="www.links.com">',
-           '<a href="www.formatwithapppend.ca?dsd=fdsad/gsda">',
-           '<a href="http://based.io">'
+           'href="www.links.com"',
+           'href="www.formatwithapppend.ca?dsd=fdsad/gsda"',
+           'href="http://based.io"'
        ];
        expect(response).to.deep.equal(hrefList);
        expect(response).to.deep.contains(hrefList[0]);
@@ -81,11 +81,11 @@ describe("Href Parser", () => {
    it("should parse the urls out even if href is not the first element in the tag", () => {
        const email = '<a title="Resolve" class="aapl-link" style="TEXT-DECORATION: none; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LETTER-SPACING: normal; LINE-HEIGHT: 100%" href="http://ow.ly/KahG30mqCQX" target="_blank"><font style="FONT-SIZE: 0px; COLOR: transparent; DISPLAY: inline">8sy</font>Verify your Account</a>';
        let response = JsIdentifier.parseHrefs(email);
-       let hrefList = ['<a title="Resolve" class="aapl-link" style="TEXT-DECORATION: none; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LETTER-SPACING: normal; LINE-HEIGHT: 100%" href="http://ow.ly/KahG30mqCQX" target="_blank"><font style="FONT-SIZE: 0px; COLOR: transparent; DISPLAY: inline">'];
+       let hrefList = ['href="http://ow.ly/KahG30mqCQX"'];
        expect(response).to.deep.equal(hrefList);
        expect(response.length).to.equal(1);
    });
-  
+
 });
 
 describe("Url Parser", () => {
