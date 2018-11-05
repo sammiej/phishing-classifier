@@ -1,6 +1,7 @@
 /*jshint esversion: 6*/
 
 const assert = require('assert');
+const fs = require('fs');
 var features = require('../urlFeatures.js');
 
 describe('urlContainsIP', function() {
@@ -58,6 +59,11 @@ describe('numberofLinkedToDomain', function() {
         var emailBody = 'Hello this is not a phishing email I promise https://dummy.com/phishing, http://www.dummy.com/c=$3phishing, https://someotherdomain.com/phishing';
 
         assert.equal(features.numberOfLinkedToDomain(emailBody), 2);
+    });
+
+    it('Should not include email domains, and other artifacts', () => {
+      var emailBody = '<meta http-equiv="ContentType" content="text/html; charset=utf-8"><br>Dear somebody@hotmail.com</br><img id="009" src="cid:0909@phpmailer.0">';
+      assert.equal(features.numberOfLinkedToDomain(emailBody), 0);
     });
 });
 
@@ -126,5 +132,17 @@ describe('disparitiesBetweenHrefLinkText', function() {
         assert.equal(features.disparitiesBetweenHrefLinkText(emailBody1), true);
         assert.equal(features.disparitiesBetweenHrefLinkText(emailBody2), true);
         assert.equal(features.disparitiesBetweenHrefLinkText(emailBody3), true);
+    });
+
+    it('Should not crash', (done) => {
+      fs.readFile(__dirname + "/test-phishing-email-0.txt", (err, data) => {
+        if (err) {
+          done(err);
+        }
+        else {
+          assert.equal(features.disparitiesBetweenHrefLinkText(data.toString()), false);
+        done();
+        }
+      });
     });
 });
