@@ -62,10 +62,12 @@ exports.urlContainsIP = function(emailBody) {
 exports.numberOfLinkedToDomain = function (emailBody) {
     var domainSet = new Set();
 
-    // Unrestrictive, finds all urls with /g flag, ex. http://www.dummy.com/phishing
-    var regexpUrl = /((http(s)?|ftp)?(:\/\/.))?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.|\/)\b[a-z]{0,6}([-a-zA-Z0-9@:%_\+.~#?$&//=]*)/igm;
+    // Unrestrictive, finds all urls with /g flag, ex. http://www.dummy.com/phishing, does not allow emails
+    var regexpUrl = /((http(s)?|ftp)?(:\/\/.))?(www\.)?[-a-zA-Z0-9:@%._\+~#=]{2,256}(\.)(\/)?\b[a-z]{0,6}([-a-zA-Z0-9@:%_\+.~#?$&//=]*)/igm;
+    var regexpDisgardEmail = /^((http(s)?|ftp)?(:\/\/.))?(www\.)?[-a-zA-Z0-9:%._\+~#=]{2,256}(\.)(\/)?\b[a-z]{0,6}([-a-zA-Z0-9@:%_\+.~#?$&//=]*)$/igm;
+
     // Strips all subdomains, ex. http://www.dummy.com
-    var regexpDomain = /^((http[s]?|ftp):\/\/)?[A-Za-z0-9.:-]+(?!.*\|\w*$)/i;
+    var regexpDomain = /^((http[s]?|ftp):\/\/)?[A-Za-z0-9.:-]+(?!.*\|\w*$)/ig;
     // Strips all domain prepends, ex. dummy.com
     var regexpProto = /^((http[s]?|ftp):\/\/)?(www.)?/i;
 
@@ -73,10 +75,14 @@ exports.numberOfLinkedToDomain = function (emailBody) {
     var urls = emailBody.match(regexpUrl);
     if(urls == null) return 0;
 
-    var i, domain;
+    var i, url, domain;
     for(i=0; i<urls.length; i++) {
-        urls[i] = urls[i].match(regexpDomain)[0];
-        domain = urls[i].replace(regexpProto, '');
+        url = urls[i].match(regexpDisgardEmail) ? urls[i].match(regexpDisgardEmail)[0] : null;
+        if(url == null) continue;
+        url = url.match(regexpDomain) ? url.match(regexpDomain)[0] : null;
+        if(url == null) continue;
+
+        domain = url.replace(regexpProto, '');
         domainSet.add(domain);
     }
     return domainSet.size;
@@ -170,21 +176,25 @@ function getLinkText(urlElement) {
          if(!linkText || !href) continue;
 
          // Find url in link text
-         url = linkText.match(regexpUrl)[0];
-         href = href.match(regexpUrl)[0];
+         url = linkText.match(regexpUrl) ? linkText.match(regexpUrl)[0] : null;
+         href = href.match(regexpUrl) ? href.match(regexpUrl)[0] : null;
          // If anything is not URL-based, skip
          if(!url || !href) {
-             console.log(url + " " + href);
              continue;
          }
 
          // Strip subdomains and protocols/prepends
-         urlDomain = url.match(regexpDomain)[0].replace(regexpProto, '');
-         hrefDomain = href.match(regexpDomain)[0].replace(regexpProto, '');
+         urlDomain = url.match(regexpDomain) ? url.match(regexpDomain)[0] : null;
+         hrefDomain = href.match(regexpDomain) ? href.match(regexpDomain)[0] : null;
+         if(!urlDomain || !hrefDomain) {
+             console.log("Unexpected behaviour, probably invalid url: " + urlDomain + hrefDomain);
+             continue;
+         }
+
+         urlDomain = urlDomain.replace(regexpProto, '');
+         hrefDomain = hrefDomain.replace(regexpProto, '');
 
          if(urlDomain != hrefDomain) {
-             console.log(urlDomain);
-             console.log(hrefDomain);
              return true;
          }
      }
