@@ -1,5 +1,5 @@
 const {expect} = require('chai');
-const {JsIdentifier} = require("../../email-parser/js-iden.js");
+const {JsIdentifier} = require("../lib/features/featureSet0.js");
 
 describe("JS Parser", () => {
     it("should detect lower case script tag", () => {
