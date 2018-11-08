@@ -14,6 +14,12 @@
     "composer": true
   },
   "description": "Enter a description of your package!",
-  "dependencies": {},
-  "license": "MIT"
+  "dependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha test/**/*.jsx"
+  }
 }
