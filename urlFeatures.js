@@ -95,12 +95,10 @@ exports.numberOfLinkedToDomain = function (emailBody) {
  * Returns: the href attribute, a string
  */
 function getHref(urlElement) {
-    if(urlElement.indexOf('"') < 0) return false;
-    urlElement = urlElement.replace('<a href="', '');
-    if(urlElement.indexOf('"') < 0) return false;
-
-    var end = urlElement.indexOf('"');
-    return urlElement.substring(0, end);
+    var regex = /href=".*?"/g;
+    var href = urlElement.match(regex) ? urlElement.match(regex)[0] : null;
+    if(href == null) return null;
+    return href.replace('href="', '').replace('"', '');
 }
 
  /*
