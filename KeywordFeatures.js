@@ -2,14 +2,21 @@ var exports = module.exports = {};
 
 if(emailBody === "")
 {
+    exports.emptyCheck = true;
+    export.nullCheck = false;
     console.log('The email body string passed in has no content.');
 }
 else if(emailBody == null)
 {
+    exports.emptyCheck = false;
+    export.nullCheck = true;
     console.log('The email body string passed in points to NULL.');
 }
 else
 {
+    exports.emptyCheck = false;
+    export.nullCheck = false;
+    
     /*
      * Calculate the word count and normalisation of the features
      *   of six sets of keywords.
