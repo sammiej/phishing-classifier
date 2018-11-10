@@ -11,7 +11,7 @@ describe('KeywordFeatures Test', function() {
             assert.equal(features.KeywordFeatures(emailBody).emptyCheck, false);
         });
 
-    // // Null string check
+    // Null string check
     
     it('Should return the string NULL check of the input email body string', function () {
             assert.equal(features.KeywordFeatures(emailBody).nullCheck, false);
