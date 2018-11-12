@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 const fs = require('fs');
-var features = require('../urlFeatures.js');
+var features = require('../lib/features/featureSet1.js');
 
 describe('urlContainsIP', function() {
     it('Should return true for urls containing IPv4', () => {
