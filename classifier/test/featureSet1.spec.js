@@ -134,6 +134,14 @@ describe('disparitiesBetweenHrefLinkText', function() {
         assert.equal(features.disparitiesBetweenHrefLinkText(emailBody3), true);
     });
 
+    it('Should return false if same href attribute domain as link text domain and href is not first in <a> tag', () => {
+        var emailBody1 = 'Hello this is not a phishing email I promise';
+        var emailBody2 = 'Hello this is not a <a title="Resolve" class="aapl-link" style="TEXT-DECORATION: none; FONT-WEIGHT: bold; COLOR: #ffffff; TEXT-ALIGN: center; LETTER-SPACING: normal; LINE-HEIGHT: 100%" href="http://ow.ly/KahG30mqCQX" target="_blank"><font style="FONT-SIZE: 0px; COLOR: transparent; DISPLAY: inline">http://ow.ly/KahG30mqCQX</font> Verify your Account</a> email I promise';
+
+        assert.equal(features.disparitiesBetweenHrefLinkText(emailBody1), false);
+        assert.equal(features.disparitiesBetweenHrefLinkText(emailBody2), false);
+    });
+
     it('Should not crash', (done) => {
       fs.readFile(__dirname + "/test-phishing-email-0.txt", (err, data) => {
         if (err) {
