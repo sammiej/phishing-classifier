@@ -14,7 +14,7 @@ JsIdentifier.parseJS = function (email) {
  * @param url: string
  */
 JsIdentifier.parseDomain = function (url) {
-    const domainNameRegex = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/g
+    const domainNameRegex = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/g;
     var match = domainNameRegex.exec(url);
     return match[1];
 
@@ -58,7 +58,7 @@ JsIdentifier.countDots = function (domain) {
  */
 // TODO: regex for parsing out text after isnt working
 JsIdentifier.parsePlainUrls = function (email) {
-    var regex = /([^"]https?:\/\/[^\s]+)|( www\.[^\s]+)/g
+  var regex = /([^"]https?:\/\/[^\s]+)|( www\.[^\s]+)/g;
     var urlList = email.match(regex);
     for (let i in urlList) {
         urlList[i] = urlList[i].trim();
