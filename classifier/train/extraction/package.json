@@ -1,0 +1,32 @@
+{
+  "name": "extraction",
+  "version": "1.0.0",
+  "description": "Extract feature data from raw ham and phishing emails and store result in attr file",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/sammiej/cpen442-phishingclassifier.git"
+  },
+  "keywords": [
+    "feature",
+    "extraction",
+    "phishing",
+    "ham",
+    "classifier"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/sammiej/cpen442-phishingclassifier/issues"
+  },
+  "homepage": "https://gitlab.com/sammiej/cpen442-phishingclassifier#README",
+  "dependencies": {
+    "arff": "^0.1.1",
+    "mailparser": "^2.4.0",
+    "node-mbox": "^1.0.0"
+  }
+}
