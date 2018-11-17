@@ -3,3 +3,4 @@ env/
 .idea/
 **/**/**/node_modules
 *mbox
+classifier/train/scripts/debug/

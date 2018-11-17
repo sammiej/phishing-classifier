@@ -6,7 +6,7 @@
 
 const fs = require("fs");
 
-var filename = __dirname + "/out.json";
+var filename = __dirname + "/../model/model.json";
 
 var ensemble = null;
 
@@ -50,7 +50,8 @@ class EnsembleClassifier {
 }
 
 class DecisionNode {
-  constructor() {
+  constructor(id) {
+    this.id = id;    
     this.label = null;
   }
   
@@ -69,9 +70,9 @@ class DecisionNode {
    */
   setCondition(cond) {
     let arr = cond.split(" ");
-    this.relation = arr[1];
     let match = /\[(.*)\]/g.exec(arr[0]);
     this.featureIndex = parseInt(match[1]);
+    this.relation = arr[1];
     this.splitVal = parseFloat(arr[2]);
   }
 
@@ -91,7 +92,7 @@ class DecisionNode {
    * @return true if this node is a leaf node, false otherwise.
    */
   isLeaf() {
-    return this.label != null;
+    return !this.left && !this.right;
   }
   
   /**
@@ -138,8 +139,7 @@ class DecisionTree {
     // Load all nodes
     let nodeMap = {};
     for (let node of nodes) {
-      let nn = new DecisionNode();
-      nn.id = node.id;
+      let nn = new DecisionNode(node.id);
       if (node.condition) {
         nn.setCondition(node.condition);
       }
@@ -158,8 +158,11 @@ class DecisionTree {
       if (edge.direction == "left") {
         nodeMap[src].setLeftChild(nodeMap[target]);
       }
-      else {
+      else if (edge.direction == "right") {
         nodeMap[src].setRightChild(nodeMap[target]);
+      }
+      else {
+        console.error("Unrecognized edge direction!");
       }
     }
     this.root = nodeMap["0"];
@@ -188,28 +191,27 @@ function processJsonGraph(data) {
   try {
     let forest = [];
     let jgraphs = JSON.parse(data.toString());
-    console.log("Number of trees: " + jgraphs.length);
     for (let jgraph of jgraphs) {
       let tree = new DecisionTree(jgraph);
       forest.push(tree);
     }
-    ensemble= new EnsembleClassifier(forest);
-    onReady();
+    return new EnsembleClassifier(forest);
   }
   catch(e) {
-    console.error(e);
+    throw e;
   }
 }
 
-function onReady() {
-  let label = ensemble.predict([5.9, 2.9, 1.0, 0.5]);
-  console.log("Predicted: " + label);
-}
-
-fs.readFile(filename, (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  processJsonGraph(data);
+module.exports = new Promise((resolve, reject) => {
+  fs.readFile(filename, (err, data) => {
+    if (err) {
+      reject(err);
+      return;
+    }
+    try {
+      resolve(processJsonGraph(data));
+    } catch(e) {
+      reject(e);
+    }
+  });
 });

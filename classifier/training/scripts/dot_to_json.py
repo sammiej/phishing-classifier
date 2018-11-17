@@ -10,7 +10,8 @@ programming languages.
 
 import re
 import json
-
+import sys
+import os
 """
 Reads a single line of the file, ending with semicolon ";".
 
@@ -63,7 +64,7 @@ the id, condition or class, depending on if node is leaf node or not.
 The edges json object contains a list of edge json objects that contains
 the source, target and direction of the edge.
 """
-def convert_file(filename, out="out.json"):
+def convert_file(filename, out="model.json"):
     jarr = []
     with open(filename, "r") as f:
         # Outer while loop to loop through all graphs
@@ -109,7 +110,7 @@ def convert_file(filename, out="out.json"):
                         node["condition"] = lvals[0]
                     else:
                         # leaf node
-                        m = re.search("class = (.*)", lvals[0])
+                        m = re.search("class\s*=\s*(.*)", lvals[0])
                         node["class"] = m.group(1)
 
                     js["nodes"].append(node)
@@ -138,8 +139,18 @@ def convert_file(filename, out="out.json"):
     buf = json.dumps(jarr)
     with open(out, "w") as o:
         o.write(buf)
+        
+    print("Output file: {}".format(out))
 
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage {} model.dot".format(sys.argv[1]))
+        exit(0)
+    filename = sys.argv[1]
 
-filename = "hey.txt"
-out = "out.json"
-convert_file(filename, out)
+    dirname = os.path.dirname(filename)
+    if not dirname:
+        dirname = "."
+    
+    out = dirname + "/model.json"
+    convert_file(filename, out)
