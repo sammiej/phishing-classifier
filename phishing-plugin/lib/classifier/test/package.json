@@ -1,0 +1,27 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "Email Phishing Classifier Tests",
+  "main": "None",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/sammiej/cpen442-phishingclassifier.git"
+  },
+  "keywords": [
+    "Email",
+    "Phishing",
+    "Classifier"
+  ],
+  "author": "UBC CPEN 442 Group",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/sammiej/cpen442-phishingclassifier/issues"
+  },
+  "homepage": "https://gitlab.com/sammiej/cpen442-phishingclassifier#README",
+  "dependencies": {
+    "arff": "^0.1.1"
+  }
+}

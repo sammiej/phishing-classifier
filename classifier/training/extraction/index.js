@@ -1,7 +1,7 @@
 /**
  * Extract features from emails and output the results into attr file.
  */
-const features = require("../../lib/features.js");
+const features = require("../../classifier/lib/features.js");
 const Mbox = require("node-mbox");
 const simpleParser = require("mailparser").simpleParser;
 const fs = require("fs");
@@ -73,40 +73,6 @@ function parseEmail(rawEmail) {
     });
 }
 
-
-function extract(email) {
-  let numFeatures = 15;
-  let featureObj = {};
-
-  featureObj.containJS = features.parseJS(email.body);
-  featureObj.numLinks = features.numOfLinks(email.body);
-  featureObj.numDomainMisMatch = features.numOfDomainMisMatch(email.body, email.sender);
-  featureObj.isHtmlEmail = features.isHtmlEmail(email.body);
-  featureObj.numDotsInSender = features.countDots(email.sender);
-
-  featureObj.IPAddrInUrl = features.urlContainsIP(email.body);
-  featureObj.hasKeywordInLinkText = features.keywordPresenceInUrls(email.body);
-  featureObj.numDistinctDomains = features.numberOfLinkedToDomain(email.body);
-  featureObj.disparitiesHrefAndLinkText = features.disparitiesBetweenHrefLinkText(email.body);
-
-  let normVector = features.keywordNormalizations(email.body);
-  for (let i = 0; i < normVector.length; i++) {
-    featureObj[`keywordNorm${i}`] = normVector[i];
-  }
-
-  //console.log(featureObj);
-  // Invariant check
-  for (let key in featureObj) {
-    if (isNaN(featureObj[key])) {
-      // console.log(email);
-      //console.log(featureObj);
-      //assert(false);
-    }
-  }
-  
-  return featureObj;
-}
-
 function convertMbox(filename, classLabel, callback) {
   const mbox = new Mbox(filename);
   
@@ -114,20 +80,8 @@ function convertMbox(filename, classLabel, callback) {
     allPromises.push(
       parseEmail(msg.toString())
       .then(email => {
-        let featureObj = extract(email);
+        let {featureObj} = features.extract(email);
 
-        // if (featureObj.numDomainMisMatch > 100) {
-        //   console.log("Over 100");
-        //   return new Promise((resolve, reject) => {
-        //     featureObj.class = classLabel;
-        //     data.push(featureObj);
-        //     fs.writeFile("ticket2.mbox", msg.toString(), (err) => {
-        //       if (err) reject(err);
-        //       resolve();
-        //     });
-        //   });
-        // }
-        
         featureObj.class = classLabel;
         data.push(featureObj);
         return Promise.resolve();
@@ -147,14 +101,6 @@ function convertMbox(filename, classLabel, callback) {
     callback();
   });
 }
-
-// convertMbox("ticket2.mbox", "phishing", () => {
-//   console.log("Wait...");
-//   Promise.all(allPromises)
-//     .then(() => {
-//       console.log("Done");
-//     });
-// });
 
 convertMbox(files[0], "phishing", () => {  
   convertMbox(files[1], "non-phishing", () => {

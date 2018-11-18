@@ -44,7 +44,7 @@ if __name__ == "__main__":
     y = y.replace("phishing", 1)
     
     print("Beginning training, this might take a couple minutes")
-    clf = RandomForestClassifier(n_estimators=50, max_depth=20, random_state=0)
+    clf = RandomForestClassifier(n_estimators=128, max_depth=32)
     clf.fit(X, y)
     print("Training complete")
     

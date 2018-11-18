@@ -1,4 +1,4 @@
-var exports = module.exports = {};
+var features = {};
 
 /**
  * Helper for detecting IPv4 mask of format #.#.#.# in URLs
@@ -38,7 +38,7 @@ function check_IPv6(urls) {
  * Returns: 1 if email body contains presence of IP masked containsIPUrls
  *          0 if it doesn't
  */
-exports.urlContainsIP = function(emailBody) {
+features.urlContainsIP = function(emailBody) {
   // Modified - https://regexr.com/3e6m0
   // Unrestrictive, any resemblance of urls
   var regexp = /((http(s)?|ftp)?(:\/\/.))?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.|\/)[a-z]{0,6}([-a-zA-Z0-9@:%_\+.~#?$&//=]*)/igm;
@@ -59,7 +59,7 @@ exports.urlContainsIP = function(emailBody) {
  * Params: body, the body of the email in html
  * Returns: count of distinct domain names present
  */
-exports.numberOfLinkedToDomain = function (emailBody) {
+features.numberOfLinkedToDomain = function (emailBody) {
   var domainSet = new Set();
 
   var urlList = parseUrls(emailBody);
@@ -112,7 +112,7 @@ function getLinkText(urlElement) {
  * Returns: 1 if link texts contains presence of any of keywords
  *          0 if it doesn't
  */
-exports.keywordPresenceInUrls = function(emailBody) {
+features.keywordPresenceInUrls = function(emailBody) {
   var keywords = ["click", "here", "login", "update", "link"];
   var regexp = /<a[^>]*>([^<]+)<\/a>/igm;
   var linkTags = emailBody.match(regexp);
@@ -142,7 +142,7 @@ exports.keywordPresenceInUrls = function(emailBody) {
  * Returns: 1 if email body contains any disparities between href attribute and link text
  *          0 if it doesn't
  */
-exports.disparitiesBetweenHrefLinkText = function(emailBody) {
+features.disparitiesBetweenHrefLinkText = function(emailBody) {
   // <a href="">...</a>
   var regexpLinkTags = /<a[^>]*>([^<]+)<\/a>/igm;
   // Will match up to ex. http://www.test.com
@@ -190,7 +190,7 @@ exports.disparitiesBetweenHrefLinkText = function(emailBody) {
 
 
 // finding presence of javascript
-exports.parseJS = function (email) {
+features.parseJS = function (email) {
   email = email.toLowerCase();
   return email.includes("</script>") ? 1 : 0;
 };
@@ -216,7 +216,7 @@ function parseDomain(url) {
  * @param str [string] or [Array] of strings
  * @returns {number}
  */
-exports.countDots = function (str) {
+features.countDots = function (str) {
   try {
     if (Array.isArray(str)) {
       let max = 0;
@@ -291,7 +291,7 @@ function numOfDomainMisMatchHelper(domainList, senderDomain) {
  * @param email [string] the raw email body
  * @return number of mismatched domains
  */
-exports.numOfDomainMisMatch = function(email, sender) {
+features.numOfDomainMisMatch = function(email, sender) {
   if (!sender || sender.length === 0) {
     return 0;
   }
@@ -326,7 +326,7 @@ exports.numOfDomainMisMatch = function(email, sender) {
  * @param email
  * @returns number of links
  */
-exports.numOfLinks = function (email) {
+features.numOfLinks = function (email) {
   let regex = /href=.*?/gi;
   let result = email.match(regex);
   return result ? result.length : 0;
@@ -337,7 +337,7 @@ exports.numOfLinks = function (email) {
  * @param email
  * @returns {int} 1 for if email is text/html, 0 otherwise
  */
-exports.isHtmlEmail = function (email) {
+features.isHtmlEmail = function (email) {
   return email.includes("text/html") ? 1 : 0;
 };
 
@@ -350,7 +350,7 @@ exports.isHtmlEmail = function (email) {
  * Returns: Normalisations of six keyword sets.
  */
 
-exports.keywordNormalizations = function(emailBody) {
+features.keywordNormalizations = function(emailBody) {
   
   var featureNormalization = new Array(6);
 
@@ -456,11 +456,79 @@ exports.keywordNormalizations = function(emailBody) {
   return featureNormalization;
 };
 
+/**
+ * Extracts the features from a email and returns the corresponding
+ * feature vector of values.
+ *
+ * @param email object containing body and senders,
+ *   body is the email body, and sender is the list of sender emails.
+ * @return an object containing: {
+ *     featureVect: feature vector for the email, all of which are real numbers.
+ *     featureObj: object mapping feature names to value.
+ *   }
+ *   Returns null if a feature value is not a real number.
+ */
+features.extract = function(email) {
+  let numFeatures = 15;
+  let featureObj = {};
+  let featureVect = new Array(numFeatures);  
+
+  featureObj.containJS = features.parseJS(email.body);
+  featureVect.push(featureObj.containJS);
+  
+  featureObj.numLinks = features.numOfLinks(email.body);
+  featureVect.push(featureObj.numLinks);
+  
+  featureObj.numDomainMisMatch = features.numOfDomainMisMatch(email.body, email.sender);
+  featureVect.push(featureObj.numDomainMisMatch);
+  
+  featureObj.isHtmlEmail = features.isHtmlEmail(email.body);
+  featureVect.push(featureObj.isHtmlEmail);
+  
+  featureObj.numDotsInSender = features.countDots(email.sender);
+  featureVect.push(featureObj.numDotsInSender);  
+
+  featureObj.IPAddrInUrl = features.urlContainsIP(email.body);
+  featureVect.push(featureObj.IPAddrInUrl);
+  
+  featureObj.hasKeywordInLinkText = features.keywordPresenceInUrls(email.body);
+  featureVect.push(featureObj.hasKeywordInLinkText);
+  
+  featureObj.numDistinctDomains = features.numberOfLinkedToDomain(email.body);
+  featureVect.push(featureObj.numDistinctDomains);
+  
+  featureObj.disparitiesHrefAndLinkText = features.disparitiesBetweenHrefLinkText(email.body);
+  featureVect.push(featureObj.disparitiesHrefAndLinkText);  
+
+  let normVector = features.keywordNormalizations(email.body);
+  for (let i = 0; i < normVector.length; i++) {
+    featureObj[`keywordNorm${i}`] = normVector[i];
+    featureVect.push(normVector[i]);    
+  }
+
+  // Invariant check
+  for (let key in featureObj) {
+    if (isNaN(featureObj[key])) {
+      console.error("Unexpected Error: Output feature incorrect!");
+      return null;
+    }
+  }
+  
+  return {featureVect, featureObj};
+};
+
+
 if (process.env.NODE_ENV == "test") {
-  exports = Object.assign(exports, {
+  features = Object.assign(features, {
     parseDomain,
     parseUrls,
     findDomainList,
     numOfDomainMisMatchHelper
   });
+  // Export more functions during testing.
+  module.exports = features;
+}
+else {
+  // Under normal circumstances only extract is required.
+  module.exports = {extract: features.extract};
 }
