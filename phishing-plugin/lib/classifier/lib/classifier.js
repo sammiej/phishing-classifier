@@ -37,7 +37,6 @@ class EnsembleClassifier {
         classes[label] += 1;
       }
     }
-    console.log(classes);
     let max = 0;
     let bestLabel = null;
     for (let label in classes) {

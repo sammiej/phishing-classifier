@@ -471,7 +471,7 @@ features.keywordNormalizations = function(emailBody) {
 features.extract = function(email) {
   let numFeatures = 15;
   let featureObj = {};
-  let featureVect = [];
+  let featureVect = new Array(numFeatures);  
 
   featureObj.containJS = features.parseJS(email.body);
   featureVect.push(featureObj.containJS);

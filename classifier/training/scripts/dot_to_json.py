@@ -144,7 +144,7 @@ def convert_file(filename, out="model.json"):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage {} model.dot".format(sys.argv[1]))
+        print("Usage {} model.dot".format(sys.argv[0]))
         exit(0)
     filename = sys.argv[1]
 

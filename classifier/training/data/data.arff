@@ -1,5 +1,3 @@
-% This is the entire dataset
-
 @RELATION email-features
 
 @ATTRIBUTE containJS numeric
@@ -17,7 +15,7 @@
 @ATTRIBUTE keywordNorm3 numeric
 @ATTRIBUTE keywordNorm4 numeric
 @ATTRIBUTE keywordNorm5 numeric
-@ATTRIBUTE class {phishing,non-phishing}
+@ATTRIBUTE class {"phishing","non-phishing"}
 
 @DATA
 0,1,2,0,1,0,1,2,0,0.013333333333333334,0.013333333333333334,0,0.04,0.013333333333333334,0,"phishing"

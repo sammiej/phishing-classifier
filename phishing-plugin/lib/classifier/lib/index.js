@@ -20,9 +20,7 @@ function predict(email) {
   if (!Array.isArray(email.sender)) {
     email.sender = [email.sender];
   }
-  let {featureVect, featureObj} = features.extract(email);
-  console.log(featureVect);
-  console.log(featureObj);
+  let {featureVect} = features.extract(email);
   return classifier.predict(featureVect);
 }
 
