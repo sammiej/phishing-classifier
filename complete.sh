@@ -18,7 +18,7 @@ log_info () {
     echo "[Script--INFO]" $1
 }
 
-scriptdir="$(dirname "$0")"
+scriptdir="$(pwd)"
 cd $scriptdir
 
 log_info "Current script directory: ${scriptdir}"
@@ -42,8 +42,11 @@ if [ ! -z "$email_type" ]; then
     # Need to append data
     log_info "Appending new data to dataset"
     cd "./classifier/training/scripts"
-    python3 append_mbox_data.py $email_type $append_file
-    mv $append_file "processed_${append_file}"
+    append_file_full="${scriptdir}/${append_file}"
+    processed_file_full="${scriptdir}/processed_${append_file}"
+    python3 append_mbox_data.py $email_type $append_file_full
+    
+    mv $append_file_full $processed_file_full
     log_info "Renamed processed data append file"
     cd -
 fi
@@ -56,16 +59,16 @@ node index.js
 cd -
 
 log_info "Splitting Dataset"
-cd "./classifier/training/scripts"
-python3 data_split.py "../data/data.arff"
+cd ./classifier/training/scripts
+python3 data_split.py ../data/data.arff
 
 # Step 3: Train model with training data split
 log_info "Training model"
-python3 train.py "../data/training_data.arff"
+python3 train.py ../data/training_data.arff
 
 # Step 4: Evaluate model on test data split
 log_info "Evaluating model"
-python3 test_model.py "../data/test_data.arff" "model.joblib"
+python3 test_model.py ../data/test_data.arff model.joblib
 
 # Step 5: Convert trained model to model that can be loaded with javascript
 log_info "Converting trained model"
@@ -73,9 +76,9 @@ python3 dot_to_json.py model.dot
 
 # Step 6: Move trained model to correct location for classifier and plugin
 log_info "Moving models to saved model directory"
-mv model.* "../../classifier/model/"
+mv model.* ../../classifier/model/
 
 log_info "Moving models to mailspring classifier model directory"
 cd -
-cp ./classifier/classifier/model/model.* "./phishing-plugin/lib/classifier/model/"
+cp ./classifier/classifier/model/model.* ./phishing-plugin/lib/classifier/model/
 
