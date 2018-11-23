@@ -8,6 +8,10 @@ import {
 } from 'mailspring-exports';
 
 const classifier = require("./classifier");
+const phishingIndicator = "This email seems to be a phishing email.";
+const phishingWarningDetails = "Phishing is the fraudulent attempt to obtain sensitive\ninformation such as usernames, passwords and\ncredit card details.";
+const safeIndicator = "This email does not seem to be a phishing email.";
+const details = "Details";
 
 // Notice that this file is `main.jsx` rather than `main.es6`. We use the
 // `.jsx` filetype because we use the JSX DSL to describe markup for React to
@@ -15,12 +19,25 @@ const classifier = require("./classifier");
 class PhishingIndicator extends React.Component {
   // Adding a displayName to a React component helps for debugging.
   static displayName = 'PhishingIndicator';
-
   constructor() {
     super();
     this.state = {
-      message: MessageStore.items()[0]
+      message: MessageStore.items()[0],
+      warning: phishingIndicator,
+      details: details,
+      detailedWarning: "",
+      expandedTicket: false
     };
+    this.togglePhishingTicket = this.togglePhishingTicket.bind(this);
+  }
+  togglePhishingTicket() {
+    var expandedTicket = !this.state.expandedTicket;
+    var detailedWarning = "";
+    if (expandedTicket) {
+      detailedWarning = phishingWarningDetails;
+    }
+    this.setState({expandedTicket: expandedTicket,
+                   detailedWarning: detailedWarning});
   }
   componentDidMount() {
     this._unlisten = MessageStore.listen(this._onMessagesChanged);
@@ -65,7 +82,17 @@ class PhishingIndicator extends React.Component {
         <div className="phishingIndicator">
           <b>This message looks suspicious!</b>
           <div className="description">
-            Classifier indicates that this email is most likely a phishing email
+            <div className="warning">
+              {this.state.warning}&nbsp;
+            </div>
+            <div className="details" onClick={this.togglePhishingTicket}>
+              {this.state.details}
+            </div>
+          </div>
+          <div className="detailedWarning">
+            {this.state.detailedWarning.split("\n").map((i,key) => {
+              return <div key={key}><strong>{i}</strong></div>;
+            })}
           </div>
         </div>
       );
@@ -75,7 +102,7 @@ class PhishingIndicator extends React.Component {
         <div className="nonPhishingIndicator">
           <b>This message is safe</b>
           <div className="description">
-            Classifier indicates that this email is most likely not a phishing email
+            {safeIndicator}
           </div>
         </div>
       );        
