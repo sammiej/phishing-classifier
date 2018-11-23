@@ -13,6 +13,17 @@
 }
 
 .phishingIndicator .description {
+  display: flex;
+  flex-direction: row;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.phishingIndicator .description .details {
+  color: rgb(51,102,187);
+  cursor: pointer;
+}
+
+.phishingIndicator .description .detailedWarning {
+  display: block;
 }
