@@ -173,7 +173,7 @@ features.disparitiesBetweenHrefLinkText = function(emailBody) {
     urlDomain = url.match(regexpDomain) ? url.match(regexpDomain)[0] : null;
     hrefDomain = href.match(regexpDomain) ? href.match(regexpDomain)[0] : null;
     if(!urlDomain || !hrefDomain) {
-      console.log("Unexpected behaviour, probably invalid url: ",
+      console.error("Unexpected behaviour, probably invalid url: ",
                   urlDomain, " href domain: ",hrefDomain);
       continue;
     }
@@ -208,7 +208,7 @@ function parseDomain(url) {
   if (match) {
     return match[1];
   }
-  console.log("Unexpected url when parsing domain, url: " + url);
+  console.error("Unexpected url when parsing domain, url: " + url);
   return null;
 };
 /**
@@ -229,8 +229,7 @@ features.countDots = function (str) {
       return max;
     }
     return str ?  str.split(".").length-1 : 0;
-  }catch(e) {
-    console.log(str);
+  } catch(e) {
     throw e;
   }
 };
@@ -356,7 +355,7 @@ features.keywordNormalizations = function(emailBody) {
 
   if(!emailBody)
   {
-    console.log("The email body string passed in has no content.");
+    console.error("The email body string passed in has no content.");
     
     for (let i=0 ; i < 6 ; i++)
     {
@@ -471,7 +470,7 @@ features.keywordNormalizations = function(emailBody) {
 features.extract = function(email) {
   let numFeatures = 15;
   let featureObj = {};
-  let featureVect = new Array(numFeatures);  
+  let featureVect = [];
 
   featureObj.containJS = features.parseJS(email.body);
   featureVect.push(featureObj.containJS);
