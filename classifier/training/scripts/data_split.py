@@ -17,7 +17,7 @@ if __name__ == "__main__":
     column_labels = []
     with open(sys.argv[1]) as f:
         dataset = arff.load(f)
-        
+
     for attr in dataset["attributes"]:
         column_labels.append(attr[0])
     data = np.array(dataset["data"])
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         # Remove spaces behind commas to ensure, file can be
         # properly parsed by other parsers
         buf = re.sub(r"(,)\s", r"\1", buf)
-        
+
         with open(filename, "w") as f:
             f.write(buf)
 
@@ -50,5 +50,4 @@ if __name__ == "__main__":
     if not dirname:
         dirname = "."
     write_data(train, dataset, dirname + "/training_data.arff")
-    write_data(test, dataset, dirname + "/test_data.arff")    
-        
+    write_data(test, dataset, dirname + "/test_data.arff")

@@ -6,6 +6,7 @@ const Mbox = require("node-mbox");
 const simpleParser = require("mailparser").simpleParser;
 const fs = require("fs");
 const assert = require("assert");
+const {parseEmail} = require("./parse_email.js");
 
 const files = ["../data/phishing.mbox", "../data/ham.mbox"];
 const arff = require("arff");
@@ -38,44 +39,9 @@ attr.push({name: "keywordNorm5", type: "numeric"});
 attr.push({name: "class", type: "enum", values: ["phishing", "non-phishing"]});
 output.attributes = attr;
 
-/**
- * @param email raw email.
- * @return Promise that resolves to an object containing sender and body of the email.
- */
-function parseEmail(rawEmail) {
-  return simpleParser(rawEmail)
-    .then(parsed => {
-      let split = "\n\n";
-      let index = rawEmail.indexOf(split);
-      assert(index >= 0);      
-      let body = rawEmail.substring(index+split.length);
-      let sender = [];
-      for (let addr of parsed.from.value) {
-        if (addr.address) {
-          sender.push(addr.address);
-        } else {
-          if (addr.group &&
-              addr.group.length >= 1) {
-            for (let gaddr of addr.group) {
-              if (gaddr.address) {
-                sender.push(gaddr.address);
-              }
-            }
-          }
-        }
-      }
-      return {body, sender};
-    })
-    .catch(err => {
-      let reason = new Error("Error when parsing email");
-      reason.stack += `\nCaused By:\n${err.stack}`;
-      return reason;
-    });
-}
-
 function convertMbox(filename, classLabel, callback) {
   const mbox = new Mbox(filename);
-  
+
   mbox.on("message", function(msg) {
     allPromises.push(
       parseEmail(msg.toString())
@@ -102,7 +68,7 @@ function convertMbox(filename, classLabel, callback) {
   });
 }
 
-convertMbox(files[0], "phishing", () => {  
+convertMbox(files[0], "phishing", () => {
   convertMbox(files[1], "non-phishing", () => {
     console.log("Please wait while program is finishing up");
     Promise.all(allPromises)
@@ -116,7 +82,7 @@ convertMbox(files[0], "phishing", () => {
             console.log("Success!");
           }
         });
-        console.log("Done"); 
+        console.log("Done");
       })
       .catch(err => {
         console.error(err);
